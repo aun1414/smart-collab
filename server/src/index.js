@@ -8,6 +8,12 @@ import { ApolloServer } from "apollo-server-express";
 
 import connectDB from "./utils/db.js"; 
 
+import authTypeDefs from "./typeDefs/auth.typeDefs.js";
+import authResolvers from "./resolvers/auth.resolvers.js";
+import { verifyToken } from "./middleware/verifyToken.js";
+
+
+
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -18,15 +24,15 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(verifyToken);
 
-// GraphQL placeholders
-const typeDefs = `type Query { hello: String }`;
-const resolvers = { Query: { hello: () => "Hello world!" } };
+const typeDefs = [authTypeDefs];
+const resolvers = [authResolvers];
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: ({ req }) => ({}),
+  context: ({ req }) => ({user: req.user}),
 });
 
 await server.start();
