@@ -11,6 +11,9 @@ import connectDB from "./utils/db.js";
 import authTypeDefs from "./typeDefs/auth.typeDefs.js";
 import authResolvers from "./resolvers/auth.resolvers.js";
 import { verifyToken } from "./middleware/verifyToken.js";
+import teamTypeDefs from "./typeDefs/team.typeDefs.js";
+import teamResolvers from "./resolvers/team.resolvers.js";
+
 
 
 
@@ -26,8 +29,9 @@ app.use(cors());
 app.use(express.json());
 app.use(verifyToken);
 
-const typeDefs = [authTypeDefs];
-const resolvers = [authResolvers];
+const typeDefs = [authTypeDefs, teamTypeDefs];
+const resolvers = [authResolvers, teamResolvers];
+
 
 const server = new ApolloServer({
   typeDefs,
