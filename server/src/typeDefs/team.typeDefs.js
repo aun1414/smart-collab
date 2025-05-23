@@ -13,8 +13,11 @@ const teamTypeDefs = gql`
     name: String!
   }
 
+  type Query {getMyTeams: [Team!]!}
+  
   type Mutation {
-    createTeam(input: CreateTeamInput!): Team
+      createTeam(input: CreateTeamInput!): Team
+      inviteUserToTeam(email: String!, teamId: ID!): Team
   }
 `;
 
