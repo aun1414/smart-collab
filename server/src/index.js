@@ -19,6 +19,10 @@ import taskTypeDefs from "./typeDefs/task.typeDefs.js";
 import taskResolvers from "./resolvers/task.resolvers.js";
 import aiTypeDefs from "./typeDefs/ai.typeDefs.js";
 import aiResolvers from "./resolvers/ai.resolvers.js";
+import { upload } from "./utils/upload.js";
+import { extractTxt } from "./utils/textExtractor.js";
+import { summarizeText } from "./ai/gemini.js";
+import fs from "fs";
 
 
 
@@ -68,3 +72,16 @@ connectDB().then(() => {
     console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`);
   });
 });
+
+// File upload endpoint
+app.post("/upload", upload.single("file"), async (req, res) => {
+  try {
+    const text = await extractTxt(req.file.path);
+    const summary = await summarizeText(text);
+    fs.unlinkSync(req.file.path); // Clean up
+    res.json({ summary });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
