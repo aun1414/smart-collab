@@ -13,6 +13,12 @@ import authResolvers from "./resolvers/auth.resolvers.js";
 import { verifyToken } from "./middleware/verifyToken.js";
 import teamTypeDefs from "./typeDefs/team.typeDefs.js";
 import teamResolvers from "./resolvers/team.resolvers.js";
+import projectTypeDefs from "./typeDefs/project.typeDefs.js";
+import projectResolvers from "./resolvers/project.resolvers.js";
+import taskTypeDefs from "./typeDefs/task.typeDefs.js";
+import taskResolvers from "./resolvers/task.resolvers.js";
+import aiTypeDefs from "./typeDefs/ai.typeDefs.js";
+import aiResolvers from "./resolvers/ai.resolvers.js";
 
 
 
@@ -29,8 +35,21 @@ app.use(cors());
 app.use(express.json());
 app.use(verifyToken);
 
-const typeDefs = [authTypeDefs, teamTypeDefs];
-const resolvers = [authResolvers, teamResolvers];
+const typeDefs = [
+  authTypeDefs,
+  teamTypeDefs,
+  projectTypeDefs,
+  taskTypeDefs,
+  aiTypeDefs, 
+];
+
+const resolvers = [
+  authResolvers,
+  teamResolvers,
+  projectResolvers,
+  taskResolvers,
+  aiResolvers, 
+];
 
 
 const server = new ApolloServer({
