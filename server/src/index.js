@@ -4,6 +4,7 @@ import http from "http";
 import cors from "cors";
 import dotenv from "dotenv";
 import { ApolloServer } from "apollo-server-express";
+import Document from "./models/Document.js";
 //import Redis from "ioredis";
 
 import connectDB from "./utils/db.js"; 
@@ -22,6 +23,8 @@ import aiResolvers from "./resolvers/ai.resolvers.js";
 import { upload } from "./utils/upload.js";
 import { extractTxt } from "./utils/textExtractor.js";
 import { summarizeText } from "./ai/gemini.js";
+import documentTypeDefs from "./typeDefs/document.typeDefs.js";
+import documentResolvers from "./resolvers/document.resolvers.js";
 import fs from "fs";
 
 
@@ -44,7 +47,8 @@ const typeDefs = [
   teamTypeDefs,
   projectTypeDefs,
   taskTypeDefs,
-  aiTypeDefs, 
+  aiTypeDefs,
+  documentTypeDefs, 
 ];
 
 const resolvers = [
@@ -53,6 +57,7 @@ const resolvers = [
   projectResolvers,
   taskResolvers,
   aiResolvers, 
+  documentResolvers,
 ];
 
 
@@ -76,10 +81,22 @@ connectDB().then(() => {
 // File upload endpoint
 app.post("/upload", upload.single("file"), async (req, res) => {
   try {
+    const projectId = req.body.projectId;
+    const userId = req.user.id; 
+
     const text = await extractTxt(req.file.path);
     const summary = await summarizeText(text);
-    fs.unlinkSync(req.file.path); // Clean up
-    res.json({ summary });
+
+    fs.unlinkSync(req.file.path); // clean up temp file
+
+    const doc = await Document.create({
+      name: req.file.originalname,
+      summary,
+      project: projectId,
+      uploadedBy: userId,
+    });
+
+    res.json({ message: "Document uploaded & summarized", document: doc });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
