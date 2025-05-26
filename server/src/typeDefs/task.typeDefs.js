@@ -31,6 +31,11 @@ const taskTypeDefs = gql`
   type Mutation {
     createTask(input: CreateTaskInput!): Task
   }
+
+  type Mutation {
+    updateTaskStatus(taskId: ID!, status: String!): Task
+  }
+
 `;
 
 export default taskTypeDefs;
