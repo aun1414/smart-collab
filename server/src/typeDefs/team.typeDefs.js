@@ -18,6 +18,7 @@ const teamTypeDefs = gql`
   type Mutation {
       createTeam(input: CreateTeamInput!): Team
       inviteUserToTeam(email: String!, teamId: ID!): Team
+      deleteTeam(teamId: ID!): Boolean
   }
 `;
 

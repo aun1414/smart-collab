@@ -24,8 +24,16 @@ const taskTypeDefs = gql`
     status: TaskStatus
   }
 
+  type TaskGroupResult {
+    Todo: [Task!]!
+    InProgress: [Task!]!
+    Done: [Task!]!
+  }
+
+
   type Query {
     getTasks(projectId: ID!): [Task!]!
+    getProjectTasksGrouped(projectId: ID!): TaskGroupResult
   }
 
   type Mutation {

@@ -15,6 +15,17 @@ export default {
         .populate("assignedTo")
         .populate("createdBy");
     },
+    getProjectTasksGrouped: async (_, { projectId }, { user }) => {
+      if (!user) throw new Error("Not authenticated");
+
+      const tasks = await Task.find({ project: projectId });
+
+      return {
+        Todo: tasks.filter(task => task.status === "Todo"),
+        InProgress: tasks.filter(task => task.status === "InProgress"),
+        Done: tasks.filter(task => task.status === "Done"),
+      };
+    }
   },
 
   Mutation: {
@@ -61,7 +72,7 @@ export default {
       await task.deleteOne();
 
       return true;
-  }
+  },
 
   },
 };
