@@ -34,6 +34,7 @@ const taskTypeDefs = gql`
 
   type Mutation {
     updateTaskStatus(taskId: ID!, status: String!): Task
+    deleteTask(taskId: ID!): Boolean
   }
 
 `;

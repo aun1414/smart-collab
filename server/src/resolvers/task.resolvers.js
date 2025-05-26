@@ -50,7 +50,18 @@ export default {
       await task.save();
 
       return task;
-    }
+    },
+
+    deleteTask: async (_, { taskId }, { user }) => {
+      if (!user) throw new Error("Not authenticated");
+
+      const task = await Task.findById(taskId);
+      if (!task) throw new Error("Task not found");
+
+      await task.deleteOne();
+
+      return true;
+  }
 
   },
 };
