@@ -7,7 +7,16 @@ export default {
   Query: {
     summarizeDemo: async (_, { text }, { user }) => {
       if (!user) throw new Error("Not authenticated");
-      return await summarizeText(text);
+
+      const cacheKey = `summary:${text.slice(0, 50)}`;
+
+      const cached = await redis.get(cacheKey);
+      if (cached) return cached;
+
+      const summary = await summarizeText(text);
+      await redis.set(cacheKey, summary, "EX", 3600); // Cache for 1 hour
+
+      return summary;
     },
   },
   Mutation: {
