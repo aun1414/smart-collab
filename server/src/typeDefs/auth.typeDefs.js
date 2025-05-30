@@ -5,10 +5,18 @@ const authTypeDefs = gql`
     _id: ID!
     name: String!
     email: String!
-    token: String
+    teams: [Team!]!
   }
 
-  input SignupInput {
+  type Activity {
+    _id: ID!
+    type: String!
+    description: String!
+    user: User!
+    createdAt: String!
+  }
+
+  input RegisterInput {
     name: String!
     email: String!
     password: String!
@@ -19,13 +27,19 @@ const authTypeDefs = gql`
     password: String!
   }
 
+  type AuthPayload {
+    token: String!
+    user: User!
+  }
+
   type Query {
     me: User
+    getRecentActivity: [Activity!]!
   }
 
   type Mutation {
-    signup(input: SignupInput!): User
-    login(input: LoginInput!): User
+    register(input: RegisterInput!): AuthPayload
+    login(input: LoginInput!): AuthPayload
   }
 `;
 

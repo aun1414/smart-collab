@@ -26,6 +26,7 @@ import { summarizeText } from "./ai/gemini.js";
 import documentTypeDefs from "./typeDefs/document.typeDefs.js";
 import documentResolvers from "./resolvers/document.resolvers.js";
 import fs from "fs";
+import {redis} from "./utils/redis.js";
 
 
 
@@ -85,7 +86,17 @@ app.post("/upload", upload.single("file"), async (req, res) => {
     const userId = req.user.id; 
 
     const text = await extractTxt(req.file.path);
-    const summary = await summarizeText(text);
+    
+    const cacheKey = `summary:${text.slice(0, 50)}`;
+    const cached = await redis.get(cacheKey);
+    let summary;
+
+    if (cached) {
+      summary = cached;
+    } else {
+      summary = await summarizeText(text);
+      await redis.set(cacheKey, summary, "EX", 3600); // Cache for 1 hour
+    }
 
     fs.unlinkSync(req.file.path); // clean up temp file
 

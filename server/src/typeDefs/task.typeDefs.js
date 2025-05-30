@@ -30,17 +30,14 @@ const taskTypeDefs = gql`
     Done: [Task!]!
   }
 
-
   type Query {
     getTasks(projectId: ID!): [Task!]!
     getProjectTasksGrouped(projectId: ID!): TaskGroupResult
+    getMyTasks: [Task!]!
   }
 
   type Mutation {
     createTask(input: CreateTaskInput!): Task
-  }
-
-  type Mutation {
     updateTaskStatus(taskId: ID!, status: String!): Task
     deleteTask(taskId: ID!): Boolean
   }

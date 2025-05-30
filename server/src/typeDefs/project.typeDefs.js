@@ -7,6 +7,7 @@ const projectTypeDefs = gql`
     team: Team!
     createdBy: User!
     createdAt: String!
+    status: String
   }
 
   input CreateProjectInput {
@@ -15,13 +16,13 @@ const projectTypeDefs = gql`
   }
 
   type Query {
-    getProjects(teamId: ID!): [Project!]!
+    getProjects(teamId: ID): [Project!]!
+    getMyProjects: [Project!]!
   }
 
   type Mutation {
     createProject(input: CreateProjectInput!): Project
     deleteProject(projectId: ID!): Boolean
-
   }
 `;
 

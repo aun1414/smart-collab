@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import Activity from "../models/Activity.js";
 
 const generateToken = (user) => {
   return jwt.sign(
@@ -14,18 +15,30 @@ export default {
   Query: {
     me: async (_, __, { user }) => {
       if (!user) throw new Error("Not authenticated");
-      return await User.findById(user.id);
+      return await User.findById(user.id).populate("teams");
+    },
+    getRecentActivity: async (_, __, { user }) => {
+      if (!user) throw new Error("Not authenticated");
+      
+      return await Activity.find({ user: user.id })
+        .sort({ createdAt: -1 })
+        .limit(10)
+        .populate("user");
     },
   },
   Mutation: {
-    signup: async (_, { input }) => {
+    register: async (_, { input }) => {
       const existing = await User.findOne({ email: input.email });
       if (existing) throw new Error("User already exists");
 
       const hashed = await bcrypt.hash(input.password, 10);
       const user = await User.create({ ...input, password: hashed });
       const token = generateToken(user);
-      return { ...user.toObject(), token };
+      
+      return { 
+        token, 
+        user: await user.populate("teams")
+      };
     },
 
     login: async (_, { input }) => {
@@ -36,7 +49,12 @@ export default {
       if (!valid) throw new Error("Invalid credentials");
 
       const token = generateToken(user);
-      return { ...user.toObject(), token };
+      await user.populate("teams");
+      
+      return { 
+        token, 
+        user 
+      };
     },
   },
 };
